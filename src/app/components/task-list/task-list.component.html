@@ -1,0 +1,154 @@
+<div class="container">
+  <!-- Dashboard Stats -->
+  <div class="dashboard-stats">
+    <div class="stat-card">
+      <div class="stat-number">{{ taskStats.total }}</div>
+      <div class="stat-label">Total Tasks</div>
+    </div>
+    <div class="stat-card completed">
+      <div class="stat-number">{{ taskStats.completed }}</div>
+      <div class="stat-label">Completed</div>
+    </div>
+    <div class="stat-card in-progress">
+      <div class="stat-number">{{ taskStats.inProgress }}</div>
+      <div class="stat-label">In Progress</div>
+    </div>
+    <div class="stat-card pending">
+      <div class="stat-number">{{ taskStats.pending }}</div>
+      <div class="stat-label">Pending</div>
+    </div>
+  </div>
+  
+  <!-- Header -->
+  <div class="header">
+    <h2>Employee Task Dashboard</h2>
+    <a routerLink="/add" class="add-btn">
+      <span class="plus-icon">+</span> Add New Task
+    </a>
+  </div>
+  
+  <!-- Filters and Search -->
+  <div class="controls">
+    <div class="search-section">
+      <input 
+        type="text" 
+        [(ngModel)]="searchTerm" 
+        (input)="applyFilters()" 
+        placeholder="Search by title or employee name..."
+        class="search-input">
+    </div>
+    
+    <div class="filter-section">
+      <select [(ngModel)]="statusFilter" (change)="applyFilters()" class="filter-select">
+        <option value="">All Status</option>
+        <option value="Pending">Pending</option>
+        <option value="In-Progress">In-Progress</option>
+        <option value="Completed">Completed</option>
+      </select>
+      
+      <select [(ngModel)]="priorityFilter" (change)="applyFilters()" class="filter-select">
+        <option value="">All Priority</option>
+        <option value="High">High</option>
+        <option value="Medium">Medium</option>
+        <option value="Low">Low</option>
+      </select>
+      
+      <select [(ngModel)]="sortBy" (change)="applySorting()" class="filter-select">
+        <option value="">Sort By</option>
+        <option value="dueDate">Due Date</option>
+        <option value="priority">Priority</option>
+        <option value="title">Title</option>
+      </select>
+    </div>
+  </div>
+  
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading">
+    <div class="spinner"></div>
+    <p>Loading tasks...</p>
+  </div>
+  
+  <!-- Task Table -->
+  <div *ngIf="!loading" class="table-container">
+    <table class="task-table">
+      <thead>
+        <tr>
+          <th>Task Title</th>
+          <th>Description</th>
+          <th>Employee</th>
+          <th>Status</th>
+          <th>Priority</th>
+          <th>Due Date</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let task of paginatedTasks" class="task-row">
+          <td class="task-title">{{ task.title }}</td>
+          <td class="task-description">{{ task.description || 'No description' }}</td>
+          <td class="employee-name">{{ task.employeeName || 'Unassigned' }}</td>
+          <td><app-status-badge [status]="task.status"></app-status-badge></td>
+          <td>
+            <span [class]="'priority-badge priority-' + task.priority.toLowerCase()">
+              {{ task.priority }}
+            </span>
+          </td>
+          <td class="due-date">{{ formatDate(task.dueDate) }}</td>
+          <td class="actions">
+            <a [routerLink]="['/edit', task.id]" class="action-btn edit-btn" title="Edit Task">
+              ✎
+            </a>
+            <button (click)="confirmDelete(task)" class="action-btn delete-btn" title="Delete Task">
+              🗑
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    
+    <!-- Empty State -->
+    <div *ngIf="filteredTasks.length === 0" class="empty-state">
+      <div class="empty-icon">📋</div>
+      <h3>No tasks found</h3>
+      <p>{{ searchTerm || statusFilter || priorityFilter ? 'Try adjusting your filters' : 'Create your first task to get started' }}</p>
+      <a routerLink="/add" class="empty-action-btn">Add New Task</a>
+    </div>
+  </div>
+  
+  <!-- Pagination -->
+  <div *ngIf="filteredTasks.length > 0" class="pagination">
+    <div class="pagination-info">
+      Showing {{ getStartIndex() + 1 }} to {{ getEndIndex() }} of {{ filteredTasks.length }} tasks
+    </div>
+    <div class="pagination-controls">
+      <button 
+        (click)="previousPage()" 
+        [disabled]="currentPage === 1"
+        class="pagination-btn">
+        ‹ Previous
+      </button>
+      
+      <span class="page-info">
+        Page {{ currentPage }} of {{ totalPages }}
+      </span>
+      
+      <button 
+        (click)="nextPage()" 
+        [disabled]="currentPage === totalPages"
+        class="pagination-btn">
+        Next ›
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Confirmation Dialog -->
+<app-dialog
+  [isOpen]="showDeleteDialog"
+  title="Confirm Delete"
+  [message]="getDeleteMessage()"
+  confirmText="Delete"
+  cancelText="Cancel"
+  (confirmed)="deleteTask()"
+  (cancelled)="cancelDelete()">
+</app-dialog>

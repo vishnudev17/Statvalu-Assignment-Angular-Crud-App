@@ -1,0 +1,14 @@
+<div class="dropdown-wrapper">
+  <label *ngIf="label">{{ label }}</label>
+  <select 
+    [value]="value"
+    (change)="onSelectionChange($event)"
+    (blur)="onTouched()"
+    [disabled]="disabled"
+  >
+    <option value="" *ngIf="placeholder">{{ placeholder }}</option>
+    <option *ngFor="let option of options" [value]="option.value">
+      {{ option.label }}
+    </option>
+  </select>
+</div>

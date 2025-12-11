@@ -1,0 +1,68 @@
+<div class="container">
+  <div class="header">
+    <h2>{{ isEditMode ? 'Edit Task' : 'Add New Task' }}</h2>
+    <button type="button" class="back-btn" (click)="onCancel()">
+      ← Back to Tasks
+    </button>
+  </div>
+  
+  <form [formGroup]="taskForm" (ngSubmit)="onSubmit()" class="task-form">
+    <div class="form-section">
+      <h3>Task Details</h3>
+      
+      <app-input
+        label="Task Title *"
+        placeholder="Enter task title"
+        formControlName="title">
+      </app-input>
+      
+      <div class="form-group">
+        <label>Description</label>
+        <textarea 
+          formControlName="description" 
+          placeholder="Enter task description"
+          rows="4">
+        </textarea>
+      </div>
+      
+      <app-input
+        label="Employee Name"
+        placeholder="Assign to employee"
+        formControlName="employeeName">
+      </app-input>
+    </div>
+    
+    <div class="form-section">
+      <h3>Task Settings</h3>
+      
+      <div class="form-row">
+        <app-dropdown
+          label="Priority"
+          [options]="priorityOptions"
+          formControlName="priority">
+        </app-dropdown>
+        
+        <app-dropdown
+          label="Status"
+          [options]="statusOptions"
+          formControlName="status">
+        </app-dropdown>
+      </div>
+      
+      <app-input
+        label="Due Date"
+        type="date"
+        formControlName="dueDate">
+      </app-input>
+    </div>
+    
+    <div class="form-actions">
+      <button type="button" class="btn-cancel" (click)="onCancel()">
+        Cancel
+      </button>
+      <button type="submit" class="btn-submit" [disabled]="taskForm.invalid">
+        {{ isEditMode ? 'Update Task' : 'Create Task' }}
+      </button>
+    </div>
+  </form>
+</div>
