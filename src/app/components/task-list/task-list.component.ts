@@ -30,16 +30,16 @@ export class TaskListComponent implements OnInit {
   sortBy = '';
   loading = false;
   
-  // Pagination
+  
   currentPage = 1;
   itemsPerPage = 10;
   totalPages = 1;
   
-  // Dialog
+
   showDeleteDialog = false;
   taskToDelete: Task | null = null;
   
-  // Stats
+  
   taskStats = {
     total: 0,
     completed: 0,
@@ -70,7 +70,7 @@ export class TaskListComponent implements OnInit {
   applyFilters(): void {
     let filtered = [...this.tasks];
 
-    // Search filter
+    
     if (this.searchTerm) {
       const term = this.searchTerm.toLowerCase();
       filtered = filtered.filter(task => 
@@ -80,12 +80,12 @@ export class TaskListComponent implements OnInit {
       );
     }
 
-    // Status filter
+    
     if (this.statusFilter) {
       filtered = filtered.filter(task => task.status === this.statusFilter);
     }
     
-    // Priority filter
+
     if (this.priorityFilter) {
       filtered = filtered.filter(task => task.priority === this.priorityFilter);
     }
